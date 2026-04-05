@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Těžká slova – Y/Ý × I/Í</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#2563eb">
+<style>
+  body { font-family: Segoe UI, Arial, sans-serif; margin:0; background:linear-gradient(180deg,#eef4ff,#f8fbff); color:#1f2a44; }
+  .wrap { max-width:900px; margin:0 auto; padding:20px; }
+  .card { background:#fff; border:1px solid #dbe4f0; border-radius:22px; box-shadow:0 10px 24px rgba(17,24,39,.08); padding:24px; }
+  h1 { margin:0 0 8px; font-size:clamp(28px,4vw,42px); }
+  .sub { color:#667085; margin-bottom:20px; }
+  .counter { color:#667085; font-weight:700; margin-bottom:12px; }
+  .sentenceBox { border:2px dashed #cfe0ff; background:linear-gradient(180deg,#fcfdff,#f5f9ff); border-radius:24px; padding:28px; min-height:250px; display:flex; align-items:center; justify-content:center; text-align:center; }
+  .sentence { font-size:clamp(30px,4.8vw,46px); line-height:1.35; font-weight:900; }
+  .hint { text-align:center; color:#667085; margin:16px 0 18px; font-size:16px; }
+  .buttons { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  button { border:none; border-radius:22px; padding:22px 14px; font-size:clamp(28px,4vw,42px); font-weight:900; cursor:pointer; color:#fff; box-shadow:0 10px 18px rgba(0,0,0,.12); }
+  .btnY { background:linear-gradient(180deg,#2563eb,#1d4ed8); }
+  .btnI { background:linear-gradient(180deg,#8b5cf6,#6d28d9); }
+  .nextWrap { display:flex; justify-content:center; }
+  .nextBtn { background:#1f2a44; max-width:320px; width:100%; font-size:24px; padding:18px 14px; }
+  .feedback { margin-top:18px; border-radius:18px; padding:16px; border:1px solid #dbe4f0; display:none; font-size:18px; }
+  .feedback.good { display:block; background:#f0fdf4; border-color:#bbf7d0; }
+  .feedback.bad { display:block; background:#fef2f2; border-color:#fecaca; }
+  .mini { margin-top:14px; color:#667085; font-size:14px; text-align:center; }
+  @media (max-width:700px) {
+    .buttons { grid-template-columns:1fr; }
+    .sentenceBox { min-height:220px; padding:22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Těžká slova a chytáky</h1>
+    <div class="sub">Hotová verze <strong>index.html</strong> pro sdílení linkem. Dítě vybírá jen ze dvou tlačítek: <strong>Y/Ý</strong> nebo <strong>I/Í</strong>, a pak klikne na <strong>Další slovo</strong>.</div>
+    <div class="counter" id="counter">Slovo 1 z 44</div>
+    <div class="sentenceBox"><div class="sentence" id="sentence"></div></div>
+    <div class="hint">Vyber správné písmeno podle významu slova ve větě.</div>
+
+    <div class="buttons">
+      <button class="btnY" id="btnY">Y / Ý</button>
+      <button class="btnI" id="btnI">I / Í</button>
+    </div>
+
+    <div class="nextWrap">
+      <button class="nextBtn" id="nextBtn">Další slovo</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="mini">Klávesy: Y, I, Enter • funguje i na mobilu</div>
+  </div>
+</div>
+<script>
+const DATA = [{"group": "B", "sentence": "Po dlouhém výletu chci doma jen ___ a odpočívat.", "answer": "Y", "full": "být", "note": "Vyjmenované slovo po B."}, {"group": "B", "sentence": "Vzala do ruky ___ na dobytek.", "answer": "I", "full": "bič", "note": "Měkké I – není vyjmenované slovo."}, {"group": "B", "sentence": "Na horách ležel celý týden ___ sníh.", "answer": "I", "full": "bílý", "note": "Měkké I – barva, ne příbuzné ke slovu býlí."}, {"group": "B", "sentence": "Nové zkušenosti mohla rychle ___ během praxe.", "answer": "Y", "full": "nabýt", "note": "Tvrdé Y – od slovesa být = získat."}, {"group": "B", "sentence": "Nezapomeň si před cestou ___ telefon.", "answer": "I", "full": "nabít", "note": "Měkké I – od slovesa bít / nabíjet."}, {"group": "B", "sentence": "Museli pevnost nakonec ___ po dlouhém boji.", "answer": "Y", "full": "dobýt", "note": "Tvrdé Y – získat, ovládnout."}, {"group": "B", "sentence": "Večer si chci ___ baterii v čelovce.", "answer": "I", "full": "dobít", "note": "Měkké I – doplnit energii."}, {"group": "L", "sentence": "Z dálky bylo dobře ___ zvonění kostela.", "answer": "Y", "full": "slyšet", "note": "Vyjmenované slovo po L."}, {"group": "L", "sentence": "Kočka se chodí ráda ___ k nohám.", "answer": "I", "full": "lísat", "note": "Měkké I – není vyjmenované slovo."}, {"group": "L", "sentence": "Na zahradě roste stará ___ s oříšky.", "answer": "I", "full": "líska", "note": "Měkké I – strom."}, {"group": "L", "sentence": "Na rybníce plavala černá ___.", "answer": "Y", "full": "lyska", "note": "Tvrdé Y – pták, příbuzné ke slovu lysý."}, {"group": "L", "sentence": "Babička musí každou sobotu obilí pečlivě ___.", "answer": "I", "full": "mlít", "note": "Měkké I – sloveso, ne mlýn."}, {"group": "L", "sentence": "Na návsi stál starý vodní ___.", "answer": "Y", "full": "mlýn", "note": "Tvrdé Y – vyjmenované slovo po L."}, {"group": "L", "sentence": "Do vody se přece nesmí ___.", "answer": "I", "full": "plivat", "note": "Měkké I – není vyjmenované slovo."}, {"group": "M", "sentence": "___ pojedeme zítra vlakem na výlet.", "answer": "Y", "full": "My", "note": "Vyjmenované slovo po M."}, {"group": "M", "sentence": "Paní učitelka dala jedničku právě ___.", "answer": "I", "full": "mi", "note": "Měkké I – zájmeno."}, {"group": "M", "sentence": "Auto nás na silnici jen těsně ___.", "answer": "I", "full": "míjelo", "note": "Měkké I – od slovesa míjet."}, {"group": "M", "sentence": "Nesmíš se v odpovědi zase ___.", "answer": "Y", "full": "mýlit", "note": "Tvrdé Y – vyjmenované slovo po M."}, {"group": "M", "sentence": "Po koupání si musíš ruce dobře ___.", "answer": "Y", "full": "mýt", "note": "Tvrdé Y – vyjmenované slovo po M."}, {"group": "P", "sentence": "Jeho zbytečná ___ mu zkazila vztahy.", "answer": "Y", "full": "pýcha", "note": "Vyjmenované slovo po P."}, {"group": "P", "sentence": "Na nose se jí udělala malá ___.", "answer": "I", "full": "piha", "note": "Měkké I – není vyjmenované slovo."}, {"group": "P", "sentence": "Děda vzal do ruky ___ a upravil hranu dřeva.", "answer": "I", "full": "pilník", "note": "Měkké I – nástroj."}, {"group": "P", "sentence": "V trávě se rychle rozrostl nepříjemný ___.", "answer": "Y", "full": "pýr", "note": "Tvrdé Y – vyjmenované slovo po P."}, {"group": "P", "sentence": "Najednou jen tiše ___ a všichni zpozorněli.", "answer": "I", "full": "pískl", "note": "Měkké I – od slovesa písknout."}, {"group": "P", "sentence": "Květiny na louce začal na jaře pokrývat žlutý ___.", "answer": "Y", "full": "pyl", "note": "Tvrdé Y – vyjmenované slovo po P."}, {"group": "S", "sentence": "Její malý ___ už umí číst krátké věty.", "answer": "Y", "full": "syn", "note": "Vyjmenované slovo po S."}, {"group": "S", "sentence": "Po válce zůstal chlapec úplný ___.", "answer": "I", "full": "sirotek", "note": "Měkké I – není vyjmenované slovo."}, {"group": "S", "sentence": "Mouku prosej ještě jednou přes jemné ___.", "answer": "I", "full": "síto", "note": "Měkké I – nástroj."}, {"group": "S", "sentence": "V laboratoři pracovali se žlutou ___.", "answer": "I", "full": "sírou", "note": "Měkké I – chemický prvek."}, {"group": "S", "sentence": "Maso nesmí zůstat úplně ___.", "answer": "Y", "full": "syrové", "note": "Tvrdé Y – vyjmenované slovo po S."}, {"group": "S", "sentence": "Had začal varovně ___.", "answer": "Y", "full": "syčet", "note": "Tvrdé Y – vyjmenované slovo po S."}, {"group": "V", "sentence": "___ už dnes všechno víte.", "answer": "Y", "full": "Vy", "note": "Vyjmenované slovo po V."}, {"group": "V", "sentence": "Z poslední lavice už dobře ___ na tabuli.", "answer": "I", "full": "vidí", "note": "Měkké I – od slovesa vidět."}, {"group": "V", "sentence": "Paní učitelka nás ráno vždy srdečně ___.", "answer": "I", "full": "vítá", "note": "Měkké I – od slovesa vítat."}, {"group": "V", "sentence": "Ve vodě se po kameni vytvořil malý ___.", "answer": "I", "full": "vír", "note": "Měkké I – jiný význam než výr."}, {"group": "V", "sentence": "Na větvi seděl velký noční ___.", "answer": "Y", "full": "výr", "note": "Tvrdé Y – vyjmenované slovo po V."}, {"group": "V", "sentence": "Když se rozzlobil, začal nahlas ___.", "answer": "Y", "full": "výt", "note": "Tvrdé Y – vyjmenované slovo po V."}, {"group": "V", "sentence": "Hosty budeme zítra slavnostně ___.", "answer": "I", "full": "vítat", "note": "Měkké I – jiné slovo než výt."}, {"group": "Z", "sentence": "Ráno přišel do školy nezvykle ___.", "answer": "Y", "full": "brzy", "note": "Vyjmenované slovo po Z."}, {"group": "Z", "sentence": "Venku je velká ___ a fouká ledový vítr.", "answer": "I", "full": "zima", "note": "Měkké I – není vyjmenované slovo."}, {"group": "Z", "sentence": "Dítě dlouho jen bezradně ___.", "answer": "I", "full": "zírá", "note": "Měkké I – sloveso."}, {"group": "Z", "sentence": "Každý člověk má svůj rodný ___.", "answer": "Y", "full": "jazyk", "note": "Tvrdé Y – vyjmenované slovo po Z."}, {"group": "Z", "sentence": "Musíme se naučit správně ___ a představit se.", "answer": "Y", "full": "nazývat se", "note": "Tvrdé Y – vyjmenované slovo po Z."}, {"group": "Z", "sentence": "Únavou se mu začaly oči pomalu ___.", "answer": "I", "full": "nazívat", "note": "Měkké I – jiné slovo, chyták proti nazývat se."}];
+let index = 0;
+let answered = false;
+
+const sentenceEl = document.getElementById('sentence');
+const feedbackEl = document.getElementById('feedback');
+const counterEl = document.getElementById('counter');
+const btnY = document.getElementById('btnY');
+const btnI = document.getElementById('btnI');
+const nextBtn = document.getElementById('nextBtn');
+
+function showItem() {
+  const item = DATA[index];
+  sentenceEl.textContent = item.sentence;
+  counterEl.textContent = 'Slovo ' + (index + 1) + ' z ' + DATA.length;
+  feedbackEl.className = 'feedback';
+  feedbackEl.innerHTML = '';
+  answered = false;
+}
+
+function answer(choice) {
+  if (answered) return;
+  const item = DATA[index];
+  const ok = choice === item.answer;
+  feedbackEl.className = 'feedback ' + (ok ? 'good' : 'bad');
+  feedbackEl.innerHTML = '<strong>' + (ok ? 'Správně ✅' : 'Tentokrát ne ❌') + '</strong><br>' +
+    '<strong>Správné slovo:</strong> ' + item.full + '<br>' +
+    '<strong>Vysvětlení:</strong> ' + item.note;
+  answered = true;
+}
+
+function nextItem() {
+  index = (index + 1) % DATA.length;
+  showItem();
+}
+
+btnY.addEventListener('click', () => answer('Y'));
+btnI.addEventListener('click', () => answer('I'));
+nextBtn.addEventListener('click', nextItem);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === 'y') answer('Y');
+  if (e.key.toLowerCase() === 'i') answer('I');
+  if (e.key === 'Enter') nextItem();
+});
+
+showItem();
+</script>
+</body>
+</html>
